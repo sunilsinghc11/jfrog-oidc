@@ -1,40 +1,62 @@
+name: oidc-poc
 on:
-  workflow_dispatch:
-    inputs:
-      id:
-        description: 'run identifier'
-        required: false
-
+  push:
+    branches:
+      - '*'
 jobs:
-  id:
-    name: "oidc-poc"
-    auth:
-      permissions:
-        contents: read
-        id-token: write
-  
-      runs-on: ubuntu-latest
-      steps:
-        - name: Get id token
-          run: |
-            ID_TOKEN=$(curl -sLS -H "User-Agent: actions/oidc-client" -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
-            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=jfrog-github-sunil" | jq .value | tr -d '"')
-            echo "ID_TOKEN=${ID_TOKEN}" >> $GITHUB_ENV
-        - name: Exchange token with access
-          env:
-            ID_TOKEN: ${{ env.ID_TOKEN }}
-            POC_URL: https://psazuse.jfrog.io/
-          run: |
-            ACCESS_TOKEN=$(curl -XPOST "${POC_URL}/token" -d "{\"token\": \"${ID_TOKEN}\"}" | jq .access_token | tr -d '"')
-            echo "ACCESS_TOKEN=${ACCESS_TOKEN}" >> $GITHUB_ENV
-        - name: Checkout
-          uses: actions/checkout@v2
-        - name: Build
-          run: |
-            make build
-        - name: Deploy to artifactory
-          env:
-            ID_TOKEN: ${{ env.ACCESS_TOKEN }}
-            POC_URL: ${{ vars.POC_URL }}
-          run: |
-            curl -H "Authorization: Bearer $ACCESS_TOKEN" -T oidc-poc "${POC_URL}/artifactory/access-oidc-poc/oidc-poc-$(date +%Y%m%d%H%M%S)"
+  auth:
+    permissions:
+      contents: read
+      id-token: write
+
+    runs-on: ubuntu-latest
+    steps:
+      # - name: Token Excange
+      #   uses: jfrog/setup-jfrog-cli@v3
+      #   env:
+      #     JF_URL: ${{ARTIFACTORY_URL}}
+      #   with:
+      #     oidc-provider-name: github-access-demo 
+      #     oidc-audience: access-oidc-demo
+      - name: Get id token
+        run: |
+          ID_TOKEN=$(curl -sLS -H "User-Agent: actions/oidc-client" -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+          "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=jfrog-github-sunil" | jq .value | tr -d '"')
+          echo "ID_TOKEN=${ID_TOKEN}" >> $GITHUB_ENV
+      - name: Exchange token with access
+        env:
+          ID_TOKEN: ${{ env.ID_TOKEN }}
+          ARTIFACTORY_URL: https://psazuse.jfrog.io
+        run: |
+          ACCESS_TOKEN=$(curl -XPOST -H "Content-Type: application/json" \
+          "https://psazuse.jfrog.io/access/api/v1/oidc/token" \
+          -d "{\"provider_name\":\"github-oidc-sunil-test\", \
+          \"subject_token\": \"${ID_TOKEN}\", \
+          \"grant_type\": \"urn:ietf:params:oauth:grant-type:token-exchange\", \
+          \"subject_token_type\": \"urn:ietf:params:oauth:token-type:id_token\"}" \
+          | jq .access_token | tr -d '"')
+          echo "ACCESS_TOKEN=${ACCESS_TOKEN}" >> $GITHUB_ENV
+
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Build
+        run: |
+          make build
+
+      - name: Setup jfrog cli
+        uses: jfrog/setup-jfrog-cli@v3
+        env:
+          JF_URL: https://psazuse.jfrog.io
+          JF_ACCESS_TOKEN: ${{ env.ACCESS_TOKEN }}
+
+      - name: Deploy to artifactory
+        run:
+          export BUILD_MODULE="access-oidc-demo"
+          
+          jf rt upload "oidc-poc" access-oidc-demo/oidc-poc-$(date +%Y%m%d%H%M%S) --build-name $JFROG_CLI_BUILD_NAME --build-number $JFROG_CLI_BUILD_NUMBER --module $BUILD_MODULE
+
+      - name: Publish Build to Artifactory
+        run: |
+           jf rt build-publish     
+           jf rt bdi c --max-builds=1
