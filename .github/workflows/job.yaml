@@ -1,20 +1,14 @@
-on:
-  workflow_dispatch:
-    inputs:
-      id:
-        description: 'run identifier'
-        required: false
+name: "JFrog-GitHub NPM Publish OIDC Integration"
+on: push
 
-jobs:
-  id:
-    name: "oidc-poc"
-    auth:
-      permissions:
-        contents: read
-        id-token: write
+permissions:
+  contents: read
+  id-token: write
   
-      runs-on: ubuntu-latest
-      steps:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
         - name: Get id token
           run: |
             ID_TOKEN=$(curl -sLS -H "User-Agent: actions/oidc-client" -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
