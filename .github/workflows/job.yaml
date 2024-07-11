@@ -14,6 +14,7 @@ jobs:
             ID_TOKEN=$(curl -sLS -H "User-Agent: actions/oidc-client" -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
             "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=jfrog-github-sunil" | jq .value | tr -d '"')
             echo "ID_TOKEN=${ID_TOKEN}" >> $GITHUB_ENV
+            echo ID Token is ${ID_TOKEN}
         - name: Exchange token with access
           env:
             ID_TOKEN: ${{ env.ID_TOKEN }}
