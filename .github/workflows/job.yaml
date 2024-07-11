@@ -11,6 +11,9 @@ jobs:
     steps:
         - name: Get id token
           run: |
+            curl -sLS -H "User-Agent: actions/oidc-client" -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
+            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=jfrog-github-sunil" | jq .value | tr -d '"'
+            
             ID_TOKEN=$(curl -sLS -H "User-Agent: actions/oidc-client" -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
             "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=jfrog-github-sunil" | jq .value | tr -d '"')
             echo "ID_TOKEN=${ID_TOKEN}" >> $GITHUB_ENV
@@ -20,6 +23,7 @@ jobs:
             ID_TOKEN: ${{ env.ID_TOKEN }}
             POC_URL: https://psazuse.jfrog.io/
           run: |
+            curl -XPOST "${POC_URL}/token" -d "{\"token\": \"${ID_TOKEN}\"}" | jq .access_token | tr -d '"'
             ACCESS_TOKEN=$(curl -XPOST "${POC_URL}/token" -d "{\"token\": \"${ID_TOKEN}\"}" | jq .access_token | tr -d '"')
             echo "ACCESS_TOKEN=${ACCESS_TOKEN}" >> $GITHUB_ENV
         - name: Checkout
