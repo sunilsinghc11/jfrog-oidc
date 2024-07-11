@@ -21,7 +21,7 @@ jobs:
         - name: Exchange token with access
           env:
             ID_TOKEN: ${{ env.ID_TOKEN }}
-            POC_URL: https://psazuse.jfrog.io/
+            POC_URL: "https://psazuse.jfrog.io"
           run: |
             curl -XPOST "${POC_URL}/token" -d "{\"token\": \"${ID_TOKEN}\"}" | jq .access_token | tr -d '"'
             ACCESS_TOKEN=$(curl -XPOST "${POC_URL}/token" -d "{\"token\": \"${ID_TOKEN}\"}" | jq .access_token | tr -d '"')
