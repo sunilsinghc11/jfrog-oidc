@@ -11,13 +11,6 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      # - name: Token Excange
-      #   uses: jfrog/setup-jfrog-cli@v3
-      #   env:
-      #     JF_URL: ${{ARTIFACTORY_URL}}
-      #   with:
-      #     oidc-provider-name: github-access-demo 
-      #     oidc-audience: access-oidc-demo
       - name: Get id token
         run: |
           ID_TOKEN=$(curl -sLS -H "User-Agent: actions/oidc-client" -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
