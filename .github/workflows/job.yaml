@@ -31,9 +31,12 @@ jobs:
           | jq .access_token | tr -d '"')
           echo "ACCESS_TOKEN=${ACCESS_TOKEN}" >> $GITHUB_ENV
 
-         # curl -X GET "https:${ARTIFACTORY_URL}/artifactory/api/repositories" \
-         # -H "Authorization: Bearer ${ACCESS_TOKEN}"
-
+         
+      - name: Get Repo API
+        run: |
+          curl -X GET "https:${ARTIFACTORY_URL}/artifactory/api/repositories" \
+          -H "Authorization: Bearer ${ACCESS_TOKEN}"
+      
       - name: Checkout
         uses: actions/checkout@v2
 
