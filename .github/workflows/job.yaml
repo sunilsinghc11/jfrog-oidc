@@ -34,29 +34,29 @@ jobs:
          
       - name: Get Repo API
         run: |
-          curl -X GET "https://psazuse.jfrog.io/artifactory/api/repositories" \
+          curl -X GET "https://psazuse.jfrog.io/artifactory/api/repositories?type=remote" \
           -H "Authorization: Bearer ${ACCESS_TOKEN}"
       
-      - name: Checkout
-        uses: actions/checkout@v2
+   #   - name: Checkout
+   #     uses: actions/checkout@v2
 
-      - name: Build
-        run: |
-          make build
+   #   - name: Build
+   #    run: |
+   #       make build
 
-      - name: Setup jfrog cli
-        uses: jfrog/setup-jfrog-cli@v3
-        env:
-          JF_URL: https://psazuse.jfrog.io
-          JF_ACCESS_TOKEN: ${{ env.ACCESS_TOKEN }}
+   #   - name: Setup jfrog cli
+   #     uses: jfrog/setup-jfrog-cli@v3
+   #      env:
+   #        JF_URL: https://psazuse.jfrog.io
+   #        JF_ACCESS_TOKEN: ${{ env.ACCESS_TOKEN }}
 
-      - name: Deploy to artifactory
-        run:
-          export BUILD_MODULE="access-oidc-demo"
+   #    - name: Deploy to artifactory
+   #      run:
+   #        export BUILD_MODULE="access-oidc-demo"
           
-          jf rt upload "oidc-poc" access-oidc-demo/oidc-poc-$(date +%Y%m%d%H%M%S) --build-name $JFROG_CLI_BUILD_NAME --build-number $JFROG_CLI_BUILD_NUMBER --module $BUILD_MODULE
+   #       jf rt upload "oidc-poc" access-oidc-demo/oidc-poc-$(date +%Y%m%d%H%M%S) --build-name $JFROG_CLI_BUILD_NAME --build-number $JFROG_CLI_BUILD_NUMBER --module $BUILD_MODULE
 
-      - name: Publish Build to Artifactory
-        run: |
-           jf rt build-publish     
-           jf rt bdi c --max-builds=1
+   #   - name: Publish Build to Artifactory
+   #     run: |
+   #        jf rt build-publish     
+   #        jf rt bdi c --max-builds=1
