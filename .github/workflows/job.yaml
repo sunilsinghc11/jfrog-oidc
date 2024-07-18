@@ -34,7 +34,7 @@ jobs:
          
       - name: Get Repo API
         run: |
-          curl -X GET "https://psazuse.jfrog.io/artifactory/api/repositories?type=remote" \
+          curl -X GET "https://psazuse.jfrog.io/artifactory/api/repositories?type=virtual" \
           -H "Authorization: Bearer ${ACCESS_TOKEN}"
       
    #   - name: Checkout
