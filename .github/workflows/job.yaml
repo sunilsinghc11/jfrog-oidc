@@ -27,10 +27,10 @@ jobs:
       - name: Exchange token with access
         env:
           ID_TOKEN: ${{ env.ID_TOKEN }}
-          ARTIFACTORY_URL: https://sunilubuntu.jfrog-openshift.info
+          ARTIFACTORY_URL: http://172.16.4.42:8082
         run: |
           ACCESS_TOKEN=$(curl -k -XPOST -H "Content-Type: application/json" \
-          "https://sunilubuntu.jfrog-openshift.info/access/api/v1/oidc/token" \
+          "http://172.16.4.42:8082/access/api/v1/oidc/token" \
           -d "{\"provider_name\":\"github-oidc-sunil-test\", \
           \"subject_token\": \"${ID_TOKEN}\", \
           \"grant_type\": \"urn:ietf:params:oauth:grant-type:token-exchange\", \
@@ -48,7 +48,7 @@ jobs:
       - name: Setup jfrog cli
         uses: jfrog/setup-jfrog-cli@v3
         env:
-          JF_URL: https://sunilubuntu.jfrog-openshift.info
+          JF_URL: http://172.16.4.42:8082
           JF_ACCESS_TOKEN: ${{ env.ACCESS_TOKEN }}
 
       - name: Deploy to artifactory
