@@ -48,7 +48,7 @@ jobs:
       - name: Setup jfrog cli
         uses: jfrog/setup-jfrog-cli@v3
         env:
-          JF_URL: http://172.16.4.42:8082
+          JF_URL: https://psazuse.jfrog.io
           JF_ACCESS_TOKEN: ${{ env.ACCESS_TOKEN }}
 
       - name: Deploy to artifactory
