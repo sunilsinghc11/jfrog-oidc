@@ -27,10 +27,10 @@ jobs:
       - name: Exchange token with access
         env:
           ID_TOKEN: ${{ env.ID_TOKEN }}
-          ARTIFACTORY_URL: http://172.16.4.42:8082
+          ARTIFACTORY_URL: https://psazuse.jfrog.io
         run: |
           ACCESS_TOKEN=$(curl -k --insecure -XPOST -H "Content-Type: application/json" \
-          "http://172.16.4.42:8082/access/api/v1/oidc/token" \
+          "https://psazuse.jfrog.io/access/api/v1/oidc/token" \
           -d "{\"provider_name\":\"github-oidc-sunil-test\", \
           \"subject_token\": \"${ID_TOKEN}\", \
           \"grant_type\": \"urn:ietf:params:oauth:grant-type:token-exchange\", \
